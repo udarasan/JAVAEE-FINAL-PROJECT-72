@@ -6,6 +6,8 @@ $(document).ready(function() {
         window.location.href = 'signin.html';
     } else {
         $('#welcome-message').text('Welcome, ' + email);
+        // Fetch and display employees
+        fetchEmployees();
     }
 });
 
@@ -38,3 +40,38 @@ $('#save-employee').on('click', function() {
         },
     });
 });
+
+function fetchEmployees() {
+    $.ajax({
+        method: 'GET',
+        url: 'http://localhost:8080/EMS_Web_exploded/employee',
+        success: function(response) {
+            if (response.code === '200') {
+                var employees = response.data;
+                var employeeTable = $('#employee-table tbody');
+                employeeTable.empty(); // Clear existing rows
+                employees.forEach(function(employee) {
+                    employeeTable.append(
+                        `<tr>
+                            <td>
+                                <button class="btn btn-primary" onclick="editEmployee(${employee.eid})">Edit</button>
+                                <button class="btn btn-danger" onclick="deleteEmployee(${employee.eid})">Delete</button>
+                            </td>
+                            <td>${employee.ename}</td>
+                            <td>${employee.enumber}</td>
+                             <td>${employee.eaddress}</td>
+                            <td>${employee.edepartment}</td>
+                            <td>${employee.estatus}</td>
+                            
+                        </tr>`
+                    );
+                });
+            } else {
+                alert('Error fetching employees: ' + response.message);
+            }
+        },
+        error: function() {
+            alert('Failed to fetch employees.');
+        }
+    });
+}

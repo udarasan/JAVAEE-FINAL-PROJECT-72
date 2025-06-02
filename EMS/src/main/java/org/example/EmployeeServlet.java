@@ -13,7 +13,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -65,6 +68,54 @@ public class EmployeeServlet extends HttpServlet {
                     "message","Internal server error!"
             ));
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        resp.setContentType("application/json");
+
+        ServletContext sc = req.getServletContext();
+        BasicDataSource ds = (BasicDataSource) sc.getAttribute("ds");
+
+        try (Connection connection = ds.getConnection()) {
+            PreparedStatement pstm = connection.prepareStatement(
+                    "SELECT eid, ename, enumber, eaddress, edepartment, estatus FROM employee"
+            );
+            ResultSet rs = pstm.executeQuery();
+
+            // Build a list of employees
+            List<Map<String, String>> employees = new ArrayList<>();
+
+            while (rs.next()) {
+                Map<String, String> emp = Map.of(
+                        "eid", rs.getString("eid"),
+                        "ename", rs.getString("ename"),
+                        "enumber", rs.getString("enumber"),
+                        "eaddress", rs.getString("eaddress"),
+                        "edepartment", rs.getString("edepartment"),
+                        "estatus", rs.getString("estatus")
+                );
+                employees.add(emp);
+            }
+
+            // Write response
+            PrintWriter out = resp.getWriter();
+            resp.setStatus(HttpServletResponse.SC_OK);
+            mapper.writeValue(out, Map.of(
+                    "code", "200",
+                    "status", "success",
+                    "data", employees
+            ));
+
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            mapper.writeValue(resp.getWriter(), Map.of(
+                    "code", "500",
+                    "status", "error",
+                    "message", "Internal server error!"
+            ));
         }
     }
 

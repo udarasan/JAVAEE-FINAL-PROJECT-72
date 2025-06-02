@@ -1,58 +1,108 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-    <title>Dashbord</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
 </head>
 
 <body>
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-3 bg-secondary">side bard</div>
-            <div class="col-9 bg-light">
-                <p id="welcome-message"></p>
-                <h1 class="text-center mt-5">Welcome to the Dashboard</h1>
-                <!-- save emplpyee -->
-                <div class="container mt-5">
-                    <div class="row justify-content-center">
-                        <div class="col-md-6">
-                            <h2 class="text-center">Save Employee</h2>
-                            <form id="employee-form">
-                                <div class="mb-3">
-                                    <label for="ename" class="form-label">Employee Name</label>
-                                    <input type="text" class="form-control" id="ename" placeholder="Enter name" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="enumber" class="form-label">Employee Mobile Number</label>
-                                    <input type="text" class="form-control" id="enumber" placeholder="Enter email" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="eaddress" class="form-label">Employee Address</label>
-                                    <input type="text" class="form-control" id="eaddress" placeholder="Enter email" required>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="edepartment" class="form-label">Employee Department</label>
-                                    <input type="text" class="form-control" id="edepartment" placeholder="Enter name" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="estatus" class="form-label">Employee estatus</label>
-                                    <input type="text" class="form-control" id="estatus" placeholder="Enter email" required>
-                                </di>
-                                <button type="button" id="save-employee" class="btn btn-primary">Save Employee</button>
-                            </form>
-                        </div>
-                    </div>
-            
-            
-            
-            
-            </div>
+  <div class="container-fluid">
+    <div class="row min-vh-100">
+      <!-- Sidebar -->
+      <nav class="col-md-2 d-md-block bg-light sidebar py-4">
+        <div class="text-center mb-4">
+          <h4>Menu</h4>
         </div>
+        <ul class="nav flex-column px-3">
+          <li class="nav-item mb-2">
+            <a href="dashboard.html" class="nav-link active">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a href="dashboard.html" class="nav-link">Employee</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="col-md-10 ms-sm-auto px-4">
+        <div class="pt-5">
+          <h1 class="text-center">Welcome to the Dashboard</h1>
+
+          <div class="card mt-5 shadow-sm">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0 text-center">Save Employee</h5>
+            </div>
+            <div class="card-body">
+              <form>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="ename" class="form-label">Employee Name</label>
+                    <input type="text" class="form-control" id="ename" placeholder="Enter name" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="enumber" class="form-label">Mobile Number</label>
+                    <input type="text" class="form-control" id="enumber" placeholder="Enter mobile number" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="eaddress" class="form-label">Address</label>
+                    <input type="text" class="form-control" id="eaddress" placeholder="Enter address" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="edepartment" class="form-label">Department</label>
+                    <input type="text" class="form-control" id="edepartment" placeholder="Enter department" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="estatus" class="form-label">Status</label>
+                    <input type="text" class="form-control" id="estatus" placeholder="Enter status" required>
+                  </div>
+                </div>
+                <div class="text-end mt-4">
+                  <button type="button" id="save-employee" class="btn btn-primary">Save Employee</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Employee List Table -->
+<div class="card mt-5 shadow-sm">
+  <div class="card-header bg-success text-white">
+    <h5 class="mb-0 text-center">Employee List</h5>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover table-bordered align-middle text-center" id="employee-table">
+        <thead class="table-light">
+          <tr>
+            <th>Action</th>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Address</th>
+            <th>Department</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="employee-table tbody">
+          <!-- Dynamic rows will be inserted here using JS -->
+        </tbody>
+      </table>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
-    <script src="/js/jquery-3.6.0.min.js"></script>
-    <script src="/js/dashboard.js"></script>
-    
+  </div>
+</div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+  <script src="/js/jquery-3.6.0.min.js"></script>
+  <script src="/js/dashboard.js"></script>
 </body>
+
 </html>
