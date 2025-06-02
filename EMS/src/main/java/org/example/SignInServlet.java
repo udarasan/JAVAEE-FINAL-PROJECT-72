@@ -33,7 +33,8 @@ public class SignInServlet extends HttpServlet {
 
         try {
             Connection connection=ds.getConnection();
-            PreparedStatement pstm=connection.prepareStatement("SELECT * FROM systemusers WHERE uemail=? AND upassword=?");
+            PreparedStatement pstm=connection
+                    .prepareStatement("SELECT * FROM systemusers WHERE uemail=? AND upassword=?");
             pstm.setString(1, email);
             pstm.setString(2, password);
             ResultSet rs=pstm.executeQuery();
@@ -54,6 +55,7 @@ public class SignInServlet extends HttpServlet {
                         "message","Unauthorized Behaviour"
                 ));
             }
+            connection.close();
         } catch (SQLException e) {
             PrintWriter out=response.getWriter();
             mapper.writeValue(out,Map.of(
