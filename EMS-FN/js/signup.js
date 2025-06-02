@@ -17,7 +17,7 @@ $('#sign-up-btn').on('click', function() {
             
             if (response.code === '200') {
                 alert('Sign up successful!');
-                window.location.href = 'signin';
+                window.location.href = 'signin.html';
             } else {
                 alert('Error: ' + response.message);
             }
