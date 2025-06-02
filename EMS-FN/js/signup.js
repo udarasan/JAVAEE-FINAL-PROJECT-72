@@ -13,7 +13,9 @@ $('#sign-up-btn').on('click', function() {
             upassword: password
         }),
         success: function(response) {
-            if (response.status === '200') {
+            console.log(response);
+            
+            if (response.code === '200') {
                 alert('Sign up successful!');
                 window.location.href = 'signin';
             } else {

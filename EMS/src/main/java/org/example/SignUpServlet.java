@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
@@ -36,12 +37,33 @@ public class SignUpServlet extends HttpServlet {
             pstm.setString(3,user.get("upassword"));
             pstm.setString(4,user.get("uemail"));
             int executed = pstm.executeUpdate();
+            //handel the response
+            PrintWriter out = response.getWriter();
+            response.setContentType("application/json");
             if (executed > 0) {
                 response.setStatus(HttpServletResponse.SC_OK);
+                mapper.writeValue(out, Map.of(
+                        "code","200",
+                        "status","success",
+                        "message","User successfully created!"
+                ));
+            }else {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                mapper.writeValue(out, Map.of(
+                        "code","400",
+                        "status","error",
+                        "message","Username already exists!"
+                ));
             }
             connection.close();
         } catch (SQLException e) {
+            PrintWriter out = response.getWriter();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            mapper.writeValue(out, Map.of(
+                    "code","500",
+                    "status","error",
+                    "message","Internal server error!"
+            ));
             throw new RuntimeException(e);
         }
     }
