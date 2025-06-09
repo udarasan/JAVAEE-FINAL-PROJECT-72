@@ -37,7 +37,7 @@
               <h5 class="mb-0 text-center">Save Employee</h5>
             </div>
             <div class="card-body">
-              <form>
+              <form id="employee-form" enctype="multipart/form-data">
                 <div class="row g-3">
                   <div class="col-md-6">
                     <label for="ename" class="form-label">Employee Name</label>
@@ -59,6 +59,10 @@
                     <label for="estatus" class="form-label">Status</label>
                     <input type="text" class="form-control" id="estatus" placeholder="Enter status" required>
                   </div>
+                  <div class="col-md-6">
+                    <label for="eimage" class="form-label">Employee Image</label>
+                    <input type="file" class="form-control" id="eimage" accept="image/*" required>
+                  </div>
                 </div>
                 <div class="text-end mt-4">
                   <button type="button" id="save-employee" class="btn btn-primary">Save Employee</button>
@@ -70,30 +74,31 @@
         </div>
 
         <!-- Employee List Table -->
-<div class="card mt-5 shadow-sm">
-  <div class="card-header bg-success text-white">
-    <h5 class="mb-0 text-center">Employee List</h5>
-  </div>
-  <div class="card-body">
-    <div class="table-responsive">
-      <table class="table table-hover table-bordered align-middle text-center" id="employee-table">
-        <thead class="table-light">
-          <tr>
-            <th>Action</th>
-            <th>Name</th>
-            <th>Mobile</th>
-            <th>Address</th>
-            <th>Department</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="employee-table tbody">
-          <!-- Dynamic rows will be inserted here using JS -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+        <div class="card mt-5 shadow-sm">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0 text-center">Employee List</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover table-bordered align-middle text-center" id="employee-table">
+                <thead class="table-light">
+                  <tr>
+                    <th>Action</th>
+                    <th>Name</th>
+                    <th>Mobile</th>
+                    <th>Address</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th>Image</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Dynamic rows will be inserted here using JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
       </main>
     </div>

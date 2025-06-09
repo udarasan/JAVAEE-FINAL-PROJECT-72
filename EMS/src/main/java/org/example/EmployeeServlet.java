@@ -3,10 +3,12 @@ package org.example;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.io.IOException;
@@ -15,59 +17,82 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @WebServlet("/employee")
+@MultipartConfig
 public class EmployeeServlet extends HttpServlet {
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("application/json");
         ObjectMapper mapper = new ObjectMapper();
-        Map<String,String> user =
-                mapper.readValue(request.getInputStream(), Map.class);
+        PrintWriter out = response.getWriter();
+
+        String ename = request.getParameter("ename");
+        String enumber = request.getParameter("enumber");
+        String eaddress = request.getParameter("eaddress");
+        String edepartment = request.getParameter("edepartment");
+        String estatus = request.getParameter("estatus");
+
+        Part filePart = request.getPart("eimage");
+        String originalFileName = filePart.getSubmittedFileName();
+        String fileName = UUID.randomUUID() + "_" + originalFileName;
+
+        String uploadPath = "C:\\Lectures\\Batch\\GDSE72\\AAD\\JavaEE\\Work\\EMS-FN\\assets";
+        java.io.File uploadDir = new java.io.File(uploadPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+
+        String fileAbsolutePath = uploadPath + java.io.File.separator + fileName;
+        filePart.write(fileAbsolutePath);
 
         ServletContext sc = request.getServletContext();
-        BasicDataSource ds= (BasicDataSource) sc.getAttribute("ds");
-        try {
-            Connection connection=ds.getConnection();
-            PreparedStatement pstm=connection.prepareStatement
-                    ("INSERT INTO employee (eid,ename,enumber,eaddress,edepartment,estatus) VALUES (?,?,?,?,?,?)");
-            pstm.setString(1, UUID.randomUUID().toString());
-            pstm.setString(2,user.get("ename"));
-            pstm.setString(3,user.get("enumber"));
-            pstm.setString(4,user.get("eaddress"));
-            pstm.setString(5,user.get("edepartment"));
-            pstm.setString(6,user.get("estatus"));
+        BasicDataSource ds = (BasicDataSource) sc.getAttribute("ds");
+
+        try (Connection connection = ds.getConnection()) {
+            PreparedStatement pstm = connection.prepareStatement(
+                    "INSERT INTO employee (eid, ename, enumber, eaddress, edepartment, estatus, eimage) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?)"
+            );
+
+            String eid = UUID.randomUUID().toString();
+
+            pstm.setString(1, eid);
+            pstm.setString(2, ename);
+            pstm.setString(3, enumber);
+            pstm.setString(4, eaddress);
+            pstm.setString(5, edepartment);
+            pstm.setString(6, estatus);
+            pstm.setString(7, fileName); // relative path for web access
+
             int executed = pstm.executeUpdate();
-            //handel the response
-            PrintWriter out = response.getWriter();
-            response.setContentType("application/json");
+
             if (executed > 0) {
                 response.setStatus(HttpServletResponse.SC_OK);
                 mapper.writeValue(out, Map.of(
-                        "code","200",
-                        "status","success",
-                        "message","Employee successfully created!"
+                        "code", "200",
+                        "status", "success",
+                        "message", "Employee successfully created!"
                 ));
-            }else {
+            } else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 mapper.writeValue(out, Map.of(
-                        "code","400",
-                        "status","error",
-                        "message","Username already exists!"
+                        "code", "400",
+                        "status", "error",
+                        "message", "Failed to create employee record."
                 ));
             }
-            connection.close();
+
         } catch (SQLException e) {
-            PrintWriter out = response.getWriter();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             mapper.writeValue(out, Map.of(
-                    "code","500",
-                    "status","error",
-                    "message","Internal server error!"
+                    "code", "500",
+                    "status", "error",
+                    "message", "Internal server error."
             ));
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
@@ -81,26 +106,24 @@ public class EmployeeServlet extends HttpServlet {
 
         try (Connection connection = ds.getConnection()) {
             PreparedStatement pstm = connection.prepareStatement(
-                    "SELECT eid, ename, enumber, eaddress, edepartment, estatus FROM employee"
+                    "SELECT eid, ename, enumber, eaddress, edepartment, estatus, eimage FROM employee"
             );
             ResultSet rs = pstm.executeQuery();
 
-            // Build a list of employees
             List<Map<String, String>> employees = new ArrayList<>();
 
             while (rs.next()) {
-                Map<String, String> emp = Map.of(
-                        "eid", rs.getString("eid"),
-                        "ename", rs.getString("ename"),
-                        "enumber", rs.getString("enumber"),
-                        "eaddress", rs.getString("eaddress"),
-                        "edepartment", rs.getString("edepartment"),
-                        "estatus", rs.getString("estatus")
-                );
+                Map<String, String> emp = new HashMap<>();
+                emp.put("eid", rs.getString("eid"));
+                emp.put("ename", rs.getString("ename"));
+                emp.put("enumber", rs.getString("enumber"));
+                emp.put("eaddress", rs.getString("eaddress"));
+                emp.put("edepartment", rs.getString("edepartment"));
+                emp.put("estatus", rs.getString("estatus"));
+                emp.put("eimage", rs.getString("eimage")); // include image path
                 employees.add(emp);
             }
 
-            // Write response
             PrintWriter out = resp.getWriter();
             resp.setStatus(HttpServletResponse.SC_OK);
             mapper.writeValue(out, Map.of(
@@ -118,5 +141,4 @@ public class EmployeeServlet extends HttpServlet {
             ));
         }
     }
-
 }
